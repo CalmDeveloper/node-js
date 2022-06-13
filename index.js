@@ -6,7 +6,7 @@ app.use(express.json())
 
 app.get('/users', async (req, res) => {
     const users = await fileService.reader()
-    res.json(users)
+    return  res.json(users)
 
 })
 app.get('/users/:userId', async (req, res) => {
@@ -15,33 +15,47 @@ app.get('/users/:userId', async (req, res) => {
     if (typeof +userId === 'number' && +userId % 1 === 0) {
         const findUser = users.find((user) => user.id === +userId)
         if (findUser) {
-            res.json(findUser)
+            return    res.json(findUser)
         } else {
-            res.status(404).json(`user with userId ${+userId} no found`)
-            res.end()
+            return     res.status(404).json(`user with userId ${+userId} no found`)
         }
     } else {
-        res.status(400).json(`enter valid userId`)
-        res.end()
+        return   res.status(400).json(`enter valid userId`)
     }
 })
 
 app.post('/users',async (req, res) => {
     const {name,age} = req.body
 if (typeof name !=="string" && name.length<3){
-    res.status(400).json('enter valid username')
-    res.end()
+    return   res.status(400).json('enter valid username')
 }
 if (typeof +age !== 'number' && +age % 1 !== 0 && age<0 || age>130){
-    res.status(400).json('enter valid age')
-    res.end()
+    return  res.status(400).json('enter valid age')
 }
     const users = await fileService.reader()
     const lastId = users[users.length-1]
-    const newUser = {id:lastId.id+1, name,age}
-const newUsers = {...users,newUser}
-    const addUser = await fileService.writer(newUsers)
-    res.json(`user ${newUser} created!`)
+    const newUser = {id:lastId.id+1,name,age}
+const newUsers = [...users,{id:lastId.id+1,name,age}]
+   await fileService.writer(newUsers)
+    return  res.json(`user: id: ${newUser.id}, name: ${newUser.name}, age:${newUser.age}  created!`)
+})
+
+
+app.delete('/users/:userId',async (req, res) => {
+    const {userId} = req.params;
+    const users = await fileService.reader()
+    if (typeof +userId === 'number' && +userId % 1 === 0) {
+        const findIndex = users.findIndex((user) => user.id === +userId)
+        if (findIndex===-1) {
+            return   res.status(404).json(`user with userId ${+userId} no found`)
+        } else {
+            res.json('user was deleted!')
+            users.splice(findIndex,1)
+            return await fileService.writer(users)
+        }
+    } else {
+        return  res.status(400).json(`enter valid userId`)
+    }
 })
 app.listen(4200, () => {
     console.log('started on port 4200')
