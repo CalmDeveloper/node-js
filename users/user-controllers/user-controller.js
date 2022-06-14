@@ -41,8 +41,8 @@ const createUser = async (req, res) => {
         }
         const users = await fileService.reader()
         const lastUser = users[users.length - 1]
-        const newUser = {id: lastUser.id + 1, name, age}
-        const newUsers = [...users, {id: lastUser.id + 1, name, age}]
+        const newUser = {id: users.length ? lastUser.id + 1 : 1, name, age}
+        const newUsers = [...users, {id: users.length ? lastUser.id + 1 : 1, name, age}]
         await fileService.writer(newUsers)
         return res.json(`user: id: ${newUser.id}, name: ${newUser.name}, age:${newUser.age}  created!`)
     } catch (e) {
