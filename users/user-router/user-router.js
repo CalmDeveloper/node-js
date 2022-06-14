@@ -13,4 +13,4 @@ userRouter.post('/', userController.createUser)
 userRouter.delete('/:userId',userController.deleteUser)
 userRouter.put('/:userId', userController.updateUser )
 
-userRouter.get('*',userController.noFound )
+module.exports=userRouter

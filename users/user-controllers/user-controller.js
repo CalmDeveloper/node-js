@@ -1,4 +1,4 @@
-import {fileService} from "../user-services";
+const {fileService} = require("../user-services") ;
 
 const getAll = async (req, res) => {
     try {
@@ -99,14 +99,6 @@ const updateUser = async (req, res) => {
 
 }
 
-const noFound = async (req, res) => {
-    try {
-            res.status(404).json('Route not found');
-    }
-    catch (e) {
-        res.status(400).json(e.message || 'Unknown Error');
-    }
-}
 
 module.exports = {
     getAll,
@@ -114,5 +106,4 @@ module.exports = {
     createUser,
     deleteUser,
     updateUser,
-    noFound
 }
